@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>Your charity has been approved!</title>
+</head>
+<body style="margin:0;padding:0;background-color:#FDF8F0;font-family:Arial,Helvetica,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" border="0" role="presentation" style="background-color:#FDF8F0;">
+    <tr>
+      <td align="center" style="padding:40px 16px;">
+        <table width="100%" cellpadding="0" cellspacing="0" border="0" role="presentation"
+          style="max-width:580px;background-color:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.07);">
+
+          <!-- Header -->
+          <tr>
+            <td style="background-color:#0D6E6E;padding:36px 40px;text-align:center;">
+              <p style="margin:0;color:#ffffff;font-size:48px;line-height:1;">&#10003;</p>
+              <p style="margin:12px 0 0;color:#ffffff;font-size:26px;font-weight:700;">Charity Approved!</p>
+              <p style="margin:6px 0 0;color:#A7D3D3;font-size:14px;">You can now receive donations on GiveHope</p>
+            </td>
+          </tr>
+
+          <!-- Body -->
+          <tr>
+            <td style="padding:40px 40px 32px;">
+              <h1 style="margin:0 0 12px;color:#1A1A2E;font-size:22px;font-weight:700;line-height:1.3;">
+                Great news, {{name}}!
+              </h1>
+              <p style="margin:0 0 12px;color:#6B7280;font-size:16px;line-height:1.7;">
+                Your charity <strong style="color:#1A1A2E;">{{charityName}}</strong> has been reviewed and
+                <strong style="color:#22C55E;">approved</strong> by the GiveHope team.
+              </p>
+              <p style="margin:0 0 32px;color:#6B7280;font-size:16px;line-height:1.7;">
+                Your charity is now live and visible to donors. You can log in to your dashboard to manage your profile,
+                add projects, and track donations.
+              </p>
+
+              <!-- CTA -->
+              <table cellpadding="0" cellspacing="0" border="0" role="presentation" style="margin:0 0 32px;">
+                <tr>
+                  <td style="background-color:#F4A535;border-radius:8px;">
+                    <a href="{{dashboardUrl}}"
+                      style="display:inline-block;padding:16px 36px;color:#1A1A2E;font-size:16px;font-weight:700;text-decoration:none;">
+                      Go to My Dashboard
+                    </a>
+                  </td>
+                </tr>
+              </table>
+
+              <!-- What to do next -->
+              <table cellpadding="0" cellspacing="0" border="0" role="presentation"
+                style="background-color:#F0FAF9;border-radius:8px;width:100%;margin-bottom:0;">
+                <tr>
+                  <td style="padding:20px 24px;">
+                    <p style="margin:0 0 12px;color:#1A1A2E;font-size:15px;font-weight:700;">What to do next:</p>
+                    <p style="margin:0 0 6px;color:#6B7280;font-size:14px;line-height:1.6;">&#x2713; &nbsp; Complete your charity profile with a logo and description</p>
+                    <p style="margin:0 0 6px;color:#6B7280;font-size:14px;line-height:1.6;">&#x2713; &nbsp; Add specific projects with funding targets</p>
+                    <p style="margin:0;color:#6B7280;font-size:14px;line-height:1.6;">&#x2713; &nbsp; Share your charity page to start receiving donations</p>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td style="background-color:#F9FAFB;padding:24px 40px;border-top:1px solid #E5E7EB;text-align:center;">
+              <p style="margin:0;color:#9CA3AF;font-size:13px;line-height:1.6;">
+                &copy; {{year}} GiveHope &mdash; Helping communities, one donation at a time.
+              </p>
+            </td>
+          </tr>
+
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>

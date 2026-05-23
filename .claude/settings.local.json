@@ -1,0 +1,21 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(node --check src/services/notification.service.js)",
+      "Bash(node --check src/templates/emails/impact-report.html)",
+      "Bash(xargs -I{} node --check {})",
+      "Bash(grep -v \"^$\")",
+      "Bash(node -e \"const p=require\\('./package.json'\\); const deps={...p.dependencies,...p.devDependencies}; ['swagger-jsdoc','swagger-ui-express','helmet','express-rate-limit','morgan','cors'].forEach\\(d => console.log\\(d+':', deps[d]||'MISSING'\\)\\)\")",
+      "Bash(node -e ' *)",
+      "Bash(node -e \"const p=require\\('./package.json'\\); console.log\\(JSON.stringify\\({scripts:p.scripts, devDeps:Object.keys\\(p.devDependencies||{}\\)}, null, 2\\)\\)\")",
+      "Bash(node -e \"const fs=require\\('fs'\\); console.log\\(fs.existsSync\\('./frontend/package.json'\\)\\)\")",
+      "Bash(node --check server.js)",
+      "Bash(dir /s /b \"C:\\\\Users\\\\Yusuf\\\\Desktop\\\\Charity Website\\\\src\")",
+      "Bash(npm install *)",
+      "Bash(node -e \"require\\('sqlite3'\\); console.log\\('sqlite3 OK'\\)\")",
+      "Bash(npm test *)",
+      "Bash(npm create *)",
+      "Bash(npm run *)"
+    ]
+  }
+}
