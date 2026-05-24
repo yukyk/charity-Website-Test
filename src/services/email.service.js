@@ -26,6 +26,10 @@ function interpolate(html, vars) {
 }
 
 async function send({ to, subject, html }) {
+  if (!process.env.SENDGRID_API_KEY || !process.env.SENDGRID_FROM_EMAIL) {
+    console.log(`[email] skipped (SendGrid not configured) → ${to} | ${subject}`);
+    return;
+  }
   // Error #7 — from email must be a verified sender in SendGrid dashboard
   sgMail.setApiKey(process.env.SENDGRID_API_KEY);
   await sgMail.send({

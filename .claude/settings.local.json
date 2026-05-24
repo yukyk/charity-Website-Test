@@ -15,7 +15,21 @@
       "Bash(node -e \"require\\('sqlite3'\\); console.log\\('sqlite3 OK'\\)\")",
       "Bash(npm test *)",
       "Bash(npm create *)",
-      "Bash(npm run *)"
+      "Bash(npm run *)",
+      "Bash(node --check src/config/env.js)",
+      "Bash(node --check src/services/email.service.js)",
+      "Bash(node --check src/services/payment.service.js)",
+      "Bash(npx vite *)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:5173/)",
+      "Bash(npm list *)",
+      "Bash(npx playwright *)",
+      "Bash(node screenshot_auth.mjs)",
+      "Bash(Remove-Item -Recurse -Force screenshots, screenshot_auth.mjs -ErrorAction SilentlyContinue)",
+      "Bash(npm uninstall *)",
+      "Bash(npx kill-port *)",
+      "Bash(netstat -ano)",
+      "Bash(findstr :5173)",
+      "Bash(node screenshot_dash.mjs)"
     ]
   }
 }

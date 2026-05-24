@@ -119,7 +119,8 @@ p  { line-height: 1.7; }
   transition: border-color 0.2s, box-shadow 0.2s;
 }
 
-.input-field.with-icon { padding-left: 44px; }
+.input-field.with-icon  { padding-left:  44px; }
+.input-field.with-right { padding-right: 44px; }
 
 .input-field:focus {
   border-color: var(--color-primary);

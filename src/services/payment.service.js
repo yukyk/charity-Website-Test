@@ -21,6 +21,9 @@ let _razorpay;
 let _stripe;
 
 function getRazorpay() {
+  if (!process.env.RAZORPAY_KEY_ID || !process.env.RAZORPAY_KEY_SECRET) {
+    throw new Error('Razorpay is not configured on this server. Please contact support.');
+  }
   if (!_razorpay) {
     _razorpay = new Razorpay({
       key_id:     process.env.RAZORPAY_KEY_ID,
@@ -31,6 +34,9 @@ function getRazorpay() {
 }
 
 function getStripe() {
+  if (!process.env.STRIPE_SECRET_KEY) {
+    throw new Error('Stripe is not configured on this server. Please contact support.');
+  }
   if (!_stripe) {
     _stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
   }
@@ -44,6 +50,7 @@ function getStripe() {
  * Error #4 — payload order is orderId|paymentId (orderId first).
  */
 function verifyRazorpaySignature(orderId, paymentId, signature) {
+  if (!process.env.RAZORPAY_KEY_SECRET) return false;
   const payload  = `${orderId}|${paymentId}`;
   const expected = crypto
     .createHmac('sha256', process.env.RAZORPAY_KEY_SECRET)
@@ -57,6 +64,7 @@ function verifyRazorpaySignature(orderId, paymentId, signature) {
  * Error #15 — rawBody must be the original Buffer, never a re-serialised object.
  */
 function verifyWebhookSignature(rawBody, signature) {
+  if (!process.env.RAZORPAY_WEBHOOK_SECRET) return false;
   const expected = crypto
     .createHmac('sha256', process.env.RAZORPAY_WEBHOOK_SECRET)
     .update(rawBody)

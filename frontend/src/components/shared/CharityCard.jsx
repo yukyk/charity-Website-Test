@@ -1,7 +1,8 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { MapPin } from 'lucide-react';
 import Badge from '../ui/Badge';
+import Button from '../ui/Button';
 import ProgressBar from '../ui/ProgressBar';
 import { formatCurrency, truncate } from '../../utils/formatters';
 
@@ -15,7 +16,8 @@ const categoryVariant = {
   other:       'neutral',
 };
 
-export default function CharityCard({ charity }) {
+export default function CharityCard({ charity, showActions = false }) {
+  const navigate = useNavigate();
   const {
     id, name, category, description,
     location, goalAmount, raisedAmount, logoUrl,
@@ -27,29 +29,23 @@ export default function CharityCard({ charity }) {
   return (
     <motion.div
       className="card"
-      style={{ overflow: 'hidden', padding: 0, cursor: 'pointer' }}
+      style={{ overflow: 'hidden', padding: 0 }}
       whileHover={{ y: -4, boxShadow: 'var(--shadow-hover)' }}
       transition={{ duration: 0.22 }}
     >
+      {/* Clickable card body → charity detail page */}
       <Link to={`/charities/${id}`} style={{ display: 'block', color: 'inherit' }}>
-        {/* Hero image / gradient placeholder */}
+        {/* Hero image / gradient */}
         <div style={{
           height: 176,
           background: 'linear-gradient(135deg, var(--color-primary-dark), var(--color-primary))',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          position: 'relative',
-          overflow: 'hidden',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          position: 'relative', overflow: 'hidden',
         }}>
           {logoUrl ? (
-            <img
-              src={logoUrl}
-              alt={name}
-              style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-            />
+            <img src={logoUrl} alt={name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
           ) : (
-            <span style={{ fontSize: 56, fontWeight: 800, color: 'rgba(255,255,255,0.25)', textTransform: 'uppercase' }}>
+            <span style={{ fontSize: 56, fontWeight: 800, color: 'rgba(255,255,255,0.22)', textTransform: 'uppercase' }}>
               {name[0]}
             </span>
           )}
@@ -59,7 +55,7 @@ export default function CharityCard({ charity }) {
         </div>
 
         {/* Content */}
-        <div style={{ padding: '20px 24px 24px' }}>
+        <div style={{ padding: showActions ? '20px 24px 16px' : '20px 24px 24px' }}>
           <h3 style={{ marginBottom: 8, fontSize: 17 }}>{name}</h3>
 
           {location && (
@@ -70,8 +66,13 @@ export default function CharityCard({ charity }) {
           )}
 
           {description && (
-            <p style={{ color: 'var(--color-text-muted)', fontSize: 14, lineHeight: 1.6, marginBottom: 16 }}>
-              {truncate(description, 100)}
+            <p style={{
+              color: 'var(--color-text-muted)', fontSize: 14, lineHeight: 1.6,
+              marginBottom: goal > 0 ? 16 : 0,
+              display: '-webkit-box', WebkitLineClamp: 2,
+              WebkitBoxOrient: 'vertical', overflow: 'hidden',
+            }}>
+              {truncate(description, 120)}
             </p>
           )}
 
@@ -90,6 +91,34 @@ export default function CharityCard({ charity }) {
           )}
         </div>
       </Link>
+
+      {/* Action buttons — outside the Link to avoid nested anchors */}
+      {showActions && (
+        <div style={{
+          padding: '0 24px 20px',
+          borderTop: '1px solid var(--color-border)',
+          paddingTop: 14,
+          display: 'grid',
+          gridTemplateColumns: '1fr auto',
+          gap: 8,
+        }}>
+          <Button
+            variant="accent"
+            size="sm"
+            fullWidth
+            onClick={() => navigate(`/donate/${id}`)}
+          >
+            Donate Now
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => navigate(`/charities/${id}`)}
+          >
+            Details
+          </Button>
+        </div>
+      )}
     </motion.div>
   );
 }
