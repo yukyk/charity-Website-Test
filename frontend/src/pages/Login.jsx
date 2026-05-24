@@ -58,8 +58,8 @@ export default function Login() {
   async function onSubmit(data) {
     try {
       const res = await loginAPI({ email: data.email, password: data.password });
-      const { user, tokens } = res.data;
-      storeLogin(user, tokens);
+      const { user, accessToken, refreshToken } = res.data;
+      storeLogin(user, { accessToken, refreshToken });
       toast.success(`Welcome back, ${user.name.split(' ')[0]}!`);
       navigate(from || getDashboardPath(user.role), { replace: true });
     } catch (err) {

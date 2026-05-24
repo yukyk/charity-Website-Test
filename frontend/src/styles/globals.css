@@ -391,8 +391,12 @@ p  { line-height: 1.7; }
   .footer-grid { grid-template-columns: repeat(2, 1fr); }
 }
 
+@media (min-width: 768px) {
+  .footer-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
 @media (min-width: 1024px) {
-  .footer-grid { grid-template-columns: 2fr 1fr 1fr; }
+  .footer-grid { grid-template-columns: 2fr 1fr 1fr 1fr; }
 }
 
 .footer-heading {
@@ -412,7 +416,7 @@ p  { line-height: 1.7; }
   transition: color 0.2s;
 }
 
-.footer-link:hover { color: #fff; }
+.footer-link:hover { color: var(--color-accent); }
 
 .footer-bottom {
   border-top: 1px solid rgba(255,255,255,0.12);
@@ -754,3 +758,73 @@ p  { line-height: 1.7; }
 }
 
 @media (max-width: 540px) { .contact-name-email { grid-template-columns: 1fr; } }
+
+/* ── Navbar dropdown items ──────────────────────────────────────────────── */
+
+.dd-item       { transition: background 0.15s; }
+.dd-item:hover { background: #F9FAFB; }
+
+.dd-item-danger:hover { background: #FEF2F2 !important; }
+
+/* ── Scroll-reveal utility (add via useScrollReveal hook) ───────────────── */
+
+.reveal {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ── Charity Detail page layout ─────────────────────────────────────────── */
+
+.charity-detail-layout {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 32px;
+  align-items: start;
+}
+
+@media (min-width: 1024px) {
+  .charity-detail-layout {
+    grid-template-columns: 1fr 360px;
+  }
+}
+
+/* ── Charity detail — mobile donation bottom sheet ──────────────────────── */
+
+.donation-fab { display: none; }
+
+@media (max-width: 767px) {
+  .donation-fab {
+    display: block;
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 90;
+    white-space: nowrap;
+    box-shadow: 0 4px 24px rgba(13,110,110,0.35);
+  }
+}
+
+/* ── Stagger children animation helper ─────────────────────────────────── */
+
+.stagger > * {
+  animation: fadeSlideUp 0.4s ease both;
+}
+
+.stagger > *:nth-child(1)  { animation-delay: 0.05s; }
+.stagger > *:nth-child(2)  { animation-delay: 0.10s; }
+.stagger > *:nth-child(3)  { animation-delay: 0.15s; }
+.stagger > *:nth-child(4)  { animation-delay: 0.20s; }
+.stagger > *:nth-child(5)  { animation-delay: 0.25s; }
+.stagger > *:nth-child(6)  { animation-delay: 0.30s; }
+
+@keyframes fadeSlideUp {
+  from { opacity: 0; transform: translateY(18px); }
+  to   { opacity: 1; transform: translateY(0); }
+}

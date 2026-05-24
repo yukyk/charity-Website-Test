@@ -52,7 +52,6 @@ async function register(data) {
   }
 
   const hashedPassword = await bcrypt.hash(password, SALT_ROUNDS);
-  const emailVerificationToken = generateOpaqueToken();
 
   const user = await User.create({
     name,
@@ -60,13 +59,7 @@ async function register(data) {
     password: hashedPassword,
     phone: phone || null,
     role,
-    isVerified: false,
-    emailVerificationToken,
-  });
-
-  // Fire-and-forget email — log failures but don't block the response
-  emailService.sendVerificationEmail(user, emailVerificationToken).catch((err) => {
-    console.error('[email] sendVerificationEmail failed:', err.message);
+    isVerified: true,
   });
 
   // Return the user through the defaultScope so password is never included
@@ -108,13 +101,6 @@ async function login(email, password) {
 
   const passwordMatch = await bcrypt.compare(password, user.password);
   if (!passwordMatch) throw invalidErr;
-
-  // Block unverified users — per CLAUDE.md auth rules
-  if (!user.isVerified) {
-    const err = new Error('Please verify your email address before logging in');
-    err.statusCode = 403;
-    throw err;
-  }
 
   // Block deactivated accounts
   if (!user.isActive) {

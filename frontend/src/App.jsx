@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 import useAuthStore from './store/authStore';
@@ -20,6 +21,13 @@ import UserDashboard     from './pages/dashboard/UserDashboard';
 import CharityDashboard  from './pages/dashboard/CharityDashboard';
 import AdminDashboard    from './pages/dashboard/AdminDashboard';
 
+/* scroll to top on every route change */
+function ScrollToTop() {
+  const { pathname } = useLocation();
+  useEffect(() => { window.scrollTo({ top: 0, behavior: 'instant' }); }, [pathname]);
+  return null;
+}
+
 function ProtectedRoute({ children, requiredRole }) {
   const { isAuthenticated, user } = useAuthStore();
   if (!isAuthenticated) return <Navigate to="/login" replace />;
@@ -32,23 +40,24 @@ export default function App() {
 
   return (
     <div className="page-wrapper">
+      <ScrollToTop />
       <Navbar />
       <main className="page-main">
         <AnimatePresence mode="wait" initial={false}>
           <Routes location={location} key={location.pathname}>
-            <Route path="/"         element={<Home />} />
-            <Route path="/charities"  element={<Charities />} />
+            <Route path="/"              element={<Home />} />
+            <Route path="/charities"     element={<Charities />} />
             <Route path="/charities/:id" element={<CharityDetail />} />
             <Route path="/donate/:charityId" element={
               <ProtectedRoute><DonationCheckout /></ProtectedRoute>
             } />
             <Route path="/about"   element={<About />} />
             <Route path="/contact" element={<Contact />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/login"    element={<Login />} />
-            <Route path="/forgot-password" element={<ForgotPassword />} />
-            <Route path="/reset-password"  element={<ResetPassword />} />
-            <Route path="/verify-email"    element={<VerifyEmail />} />
+            <Route path="/register"          element={<Register />} />
+            <Route path="/login"             element={<Login />} />
+            <Route path="/forgot-password"   element={<ForgotPassword />} />
+            <Route path="/reset-password"    element={<ResetPassword />} />
+            <Route path="/verify-email"      element={<VerifyEmail />} />
             <Route path="/dashboard" element={
               <ProtectedRoute><UserDashboard /></ProtectedRoute>
             } />
