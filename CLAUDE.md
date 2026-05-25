@@ -27,12 +27,9 @@ NOT a demo. NOT a skeleton. FULLY FUNCTIONAL end-to-end.
 ## 📁 Monorepo Structure
 
 ```
-charity-donation-platform/
-├── src/                        # Backend source
-│   ├── config/
-│   │   ├── database.js         # Sequelize + MySQL connection
-│   │   └── env.js              # Validates all env vars on startup
-│   ├── controllers/            # Route handlers (thin — logic in services)
+givehope/
+├── app/                        # Backend MVC core
+│   ├── controllers/            # Class-based route handlers (thin — logic in services)
 │   ├── middleware/
 │   │   ├── auth.js             # verifyToken → attaches req.user
 │   │   ├── roles.js            # requireRole(...roles) middleware
@@ -40,25 +37,29 @@ charity-donation-platform/
 │   │   └── errorHandler.js     # Global error handler
 │   ├── models/
 │   │   └── index.js            # All Sequelize models + associations
-│   ├── routes/                 # Express routers (one file per domain)
-│   ├── services/
+│   ├── services/               # Class-based business logic (one file per domain)
 │   │   ├── email.service.js    # SendGrid email functions
 │   │   ├── payment.service.js  # Razorpay + Stripe logic
 │   │   └── notification.service.js
-│   ├── utils/
-│   │   ├── response.js         # Standard API response helpers
-│   │   └── helpers.js          # UUID validator, formatters, etc.
-│   ├── templates/
-│   │   └── emails/             # HTML email templates (inline CSS)
-│   └── app.js                  # Express app setup
-├── migrations/                 # Sequelize migrations
-├── seeders/                    # Seed: 1 admin + 3 charities
-├── tests/                      # Jest + Supertest
-├── logs/                       # access.log + error.log (gitignored)
-├── server.js                   # Entry point
-├── .env                        # Local secrets (gitignored)
-├── .env.example                # Template for all env vars
-├── frontend/                   # React frontend (Vite)
+│   └── validators/             # express-validator rule arrays (one file per domain)
+├── config/
+│   ├── database.js             # Sequelize + MySQL connection
+│   ├── env.js                  # Validates all env vars on startup
+│   ├── swagger.js              # OpenAPI spec generation
+│   └── sequelize-cli.js        # Sequelize CLI config
+├── database/
+│   ├── migrations/             # Sequelize migrations (timestamp-prefixed)
+│   └── seeders/                # Seed: 1 admin + 3 charities
+├── routes/                     # Thin Express routers (one file per domain)
+│   └── index.js                # Aggregator — mounts all domain routers under /api/v1
+├── utils/
+│   ├── response.js             # Standard API response helpers
+│   ├── helpers.js              # UUID validator, formatters, etc.
+│   ├── asyncHandler.js         # Wraps async route handlers
+│   └── AppError.js             # Operational error class
+├── templates/
+│   └── emails/                 # HTML email templates (inline CSS)
+├── views/                      # React frontend (Vite) — formerly frontend/
 │   ├── src/
 │   │   ├── api/
 │   │   │   └── client.js       # Axios instance (auto-attaches JWT)
@@ -89,11 +90,17 @@ charity-donation-platform/
 │   │   ├── utils/              # Formatters, CSV export, helpers
 │   │   └── styles/
 │   │       └── globals.css     # CSS variables + global styles
-│   ├── .env
-│   └── .env.example
+│   ├── Dockerfile              # Frontend nginx image
+│   └── nginx.conf
+├── tests/                      # Jest + Supertest
+├── logs/                       # access.log + error.log (gitignored)
+├── app.js                      # Express app setup
+├── server.js                   # Entry point
+├── .sequelizerc                # Points CLI to config/ + database/ + app/models
+├── .env                        # Local secrets (gitignored)
+├── .env.example                # Template for all env vars
 ├── docker-compose.yml
 ├── Dockerfile                  # Backend
-├── frontend/Dockerfile         # Frontend (nginx)
 └── CLAUDE.md                   # ← YOU ARE HERE
 ```
 
@@ -210,8 +217,7 @@ Donation belongsTo Project (optional)
 ### Auth `/auth`
 | Method | Route | Auth | Description |
 |--------|-------|------|-------------|
-| POST | `/register` | ❌ | Register user/charity_admin |
-| POST | `/verify-email` | ❌ | Verify email via token |
+| POST | `/register` | ❌ | Register user/charity_admin (no verification needed) |
 | POST | `/login` | ❌ | Login → returns tokens |
 | POST | `/refresh-token` | ❌ | Get new access token |
 | POST | `/forgot-password` | ❌ | Send reset email |
@@ -349,7 +355,7 @@ whileTap: { scale: 0.97 }
 
 1. **Passwords** — NEVER returned in any API response. Ever.
 2. **JWT** — Access token: 15min. Refresh token: 7 days.
-3. **Email verification** — Login blocked if `isVerified: false`.
+3. **Email verification** — NOT required. `isVerified` is always `true` on registration. Never add isVerified checks to login.
 4. **Role checks:**
    - `user` — can donate, view own profile/donations
    - `charity_admin` (role=`user` but owns a Charity) — can manage their charity
@@ -395,11 +401,13 @@ whileTap: { scale: 0.97 }
 
 ## 📧 Email Templates
 
-All in `src/templates/emails/`. Use inline CSS (works in all clients).
+All in `templates/emails/`. Use inline CSS (works in all clients).
+**Dev mode:** emails are NOT sent — logged to console with `[EMAIL SKIPPED - DEV MODE]`.
+**Production only:** real SendGrid delivery.
 
 | Template | Trigger |
 |----------|---------|
-| `welcome.html` | User registers |
+| `welcome.html` | User registers (dev: skipped) |
 | `donation-confirmation.html` | Donation status → completed |
 | `charity-approved.html` | Admin approves charity |
 | `charity-rejected.html` | Admin rejects charity |
@@ -831,7 +839,7 @@ Login (role: admin) → Admin Dashboard
 ## ⚠️ Critical Rules — Never Break These
 
 1. **Never return `password` in any API response** — add `exclude: ['password']` to every User query
-2. **Never skip email verification check** in login route
+2. **Never add `isVerified` check to login** — email verification is removed; `isVerified` is always `true` on registration
 3. **Never process a payment without verifying the signature** first
 4. **Never run migrations out of order** — timestamps in filenames enforce this
 5. **Never hardcode secrets** — always from `process.env`
@@ -864,22 +872,61 @@ Login (role: admin) → Admin Dashboard
 
 ---
 
+## 💳 Payment & Email — Dev Mode
+
+### Payments (Test Mode)
+- Razorpay: `rzp_test_` key prefix → test mode automatic, no real charges
+- Stripe: `sk_test_` key prefix → test mode automatic
+- Test banner shown in UI when `VITE_NODE_ENV !== 'production'`
+
+### Razorpay Test Cards
+| Field | Value |
+|---|---|
+| Card | 4111 1111 1111 1111 |
+| Expiry | Any future date |
+| CVV | Any 3 digits |
+| OTP | 1234 |
+| UPI success | success@razorpay |
+| UPI fail | failure@razorpay |
+
+### Stripe Test Cards
+| Field | Value |
+|---|---|
+| Card | 4242 4242 4242 4242 |
+| Expiry | Any future date |
+| CVV | Any 3 digits |
+| 3D Secure | 4000 0027 6000 3184 |
+| Always decline | 4000 0000 0000 0002 |
+
+### Email (Dev Mode)
+- Emails are NOT sent in development — logged to console with `[EMAIL SKIPPED - DEV MODE]`
+- No SendGrid account needed for local development
+- Real emails only sent when `NODE_ENV=production`
+
+### Known Error #18 — Email Verification Removed
+**Prevention Rule:** This platform does not use email verification. Do not add `isVerified` checks
+to login or register. `isVerified` is always set to `true` on registration. The `/verify-email`
+route is removed from the backend; the frontend page shows "not required" message.
+
+---
+
 ## 📞 Quick Reference — Where Things Live
 
 | I need to... | Go to... |
 |---|---|
-| Add a new API route | `src/routes/` → `src/controllers/` → `src/services/` |
-| Change DB schema | Create new migration in `migrations/` |
-| Add an email template | `src/templates/emails/` + update `email.service.js` |
-| Add a new page | `frontend/src/pages/` + add route in `App.jsx` |
-| Add a reusable component | `frontend/src/components/ui/` or `shared/` |
-| Change global styles | `frontend/src/styles/globals.css` |
-| Add global state | `frontend/src/store/` (Zustand) |
-| Add a server state query | React Query in the component or custom hook in `hooks/` |
+| Add a new API route | `routes/` → `app/controllers/` → `app/services/` |
+| Add a validator rule | `app/validators/<domain>.validator.js` |
+| Change DB schema | Create new migration in `database/migrations/` |
+| Add an email template | `templates/emails/` + update `app/services/email.service.js` |
+| Add a new page | `views/src/pages/` + add route in `views/src/App.jsx` |
+| Add a reusable component | `views/src/components/ui/` or `shared/` |
+| Change global styles | `views/src/styles/globals.css` |
+| Add global state | `views/src/store/` (Zustand) |
+| Add a server state query | React Query in the component or custom hook in `views/src/hooks/` |
 | Log an error | Obsidian vault → `GiveHope-Dev/Error Logs/YYYY-MM-DD.md` |
 | Check past errors | Obsidian → `GiveHope-Dev/Error Dashboard.md` |
 
 ---
 
-*Last updated: Project initialization*
+*Last updated: Email verification removed; test-mode payments configured*
 *Claude Code: Read this file fully at the start of every session. It is your memory.*

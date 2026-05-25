@@ -29,7 +29,10 @@
       "Bash(npx kill-port *)",
       "Bash(netstat -ano)",
       "Bash(findstr :5173)",
-      "Bash(node screenshot_dash.mjs)"
+      "Bash(node screenshot_dash.mjs)",
+      "Bash(awk '/^import |^const .* = require/{print; next} /^[^[:space:]]/&&NR>1{exit}' '/c/Users/Yusuf/Desktop/Charity Website/__TRACKED_VAR__')",
+      "Bash(Get-ChildItem \"C:/Users/Yusuf/Desktop/Charity Website/\" -Filter \".env*\")",
+      "Bash(Select-Object Name)"
     ]
   }
 }

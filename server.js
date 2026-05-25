@@ -1,7 +1,7 @@
 require('dotenv').config();
-const { validateEnv } = require('./src/config/env');
-const { sequelize } = require('./src/config/database');
-const app = require('./src/app');
+const { validateEnv } = require('./config/env');
+const { sequelize } = require('./config/database');
+const app = require('./app');
 const { spawn } = require('child_process');
 const path = require('path');
 const fs = require('fs');
@@ -12,7 +12,7 @@ const PORT = process.env.PORT || 3000;
 const isDev = process.env.NODE_ENV !== 'production';
 
 function startFrontend() {
-  const frontendDir = path.join(__dirname, 'frontend');
+  const frontendDir = path.join(__dirname, 'views');
   if (!fs.existsSync(path.join(frontendDir, 'package.json'))) {
     console.log('[GiveHope] No frontend/package.json found — skipping frontend dev server.');
     return null;

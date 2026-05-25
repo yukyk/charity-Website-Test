@@ -1,6 +1,6 @@
 # Dependencies
 node_modules/
-frontend/node_modules/
+views/node_modules/
 
 # Environment variables — NEVER commit these
 .env
@@ -22,7 +22,7 @@ Thumbs.db
 # Build output
 dist/
 build/
-frontend/dist/
+views/dist/
 
 # Test coverage
 coverage/

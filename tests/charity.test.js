@@ -1,9 +1,9 @@
 const request = require('supertest');
 const bcrypt  = require('bcryptjs');
-const app     = require('../src/app');
-const { sequelize, User } = require('../src/models');
+const app     = require('../app');
+const { sequelize, User } = require('../app/models');
 
-jest.mock('../src/services/email.service', () => ({
+jest.mock('../app/services/email.service', () => ({
   sendVerificationEmail:    jest.fn().mockResolvedValue(undefined),
   sendPasswordResetEmail:   jest.fn().mockResolvedValue(undefined),
   sendDonationConfirmation: jest.fn().mockResolvedValue(undefined),

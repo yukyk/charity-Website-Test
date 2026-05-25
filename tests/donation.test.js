@@ -1,9 +1,9 @@
 const request = require('supertest');
 const bcrypt  = require('bcryptjs');
-const app     = require('../src/app');
-const { sequelize, User } = require('../src/models');
+const app     = require('../app');
+const { sequelize, User } = require('../app/models');
 
-jest.mock('../src/services/email.service', () => ({
+jest.mock('../app/services/email.service', () => ({
   sendVerificationEmail:    jest.fn().mockResolvedValue(undefined),
   sendPasswordResetEmail:   jest.fn().mockResolvedValue(undefined),
   sendDonationConfirmation: jest.fn().mockResolvedValue(undefined),
@@ -13,7 +13,7 @@ jest.mock('../src/services/email.service', () => ({
 }));
 
 // Mock Razorpay and Stripe — we test our logic, not the payment gateways
-jest.mock('../src/services/payment.service', () => ({
+jest.mock('../app/services/payment.service', () => ({
   createRazorpayOrder: jest.fn().mockResolvedValue({
     id:       'order_test123456789',
     amount:   50000, // paise (₹500)
@@ -174,7 +174,7 @@ describe('POST /donations/verify-payment', () => {
 
   it('400 — fails when signature check returns false', async () => {
     // Override mock to return false just for this test
-    const paymentService = require('../src/services/payment.service');
+    const paymentService = require('../app/services/payment.service');
     paymentService.verifyRazorpaySignature.mockReturnValueOnce(false);
 
     // Create a fresh order to get a pending donation

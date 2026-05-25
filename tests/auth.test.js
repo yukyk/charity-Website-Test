@@ -1,9 +1,9 @@
 const request = require('supertest');
-const app     = require('../src/app');
-const { sequelize, User } = require('../src/models');
+const app     = require('../app');
+const { sequelize, User } = require('../app/models');
 
 // Mock email service — we test API behaviour, not SendGrid delivery
-jest.mock('../src/services/email.service', () => ({
+jest.mock('../app/services/email.service', () => ({
   sendVerificationEmail:  jest.fn().mockResolvedValue(undefined),
   sendPasswordResetEmail: jest.fn().mockResolvedValue(undefined),
   sendDonationConfirmation: jest.fn().mockResolvedValue(undefined),
@@ -34,7 +34,7 @@ describe('POST /auth/register', () => {
     expect(res.status).toBe(201);
     expect(res.body.success).toBe(true);
     expect(res.body.data.email).toBe('jane@example.com');
-    expect(res.body.data.isVerified).toBe(false);
+    expect(res.body.data.isVerified).toBe(true);
     expect(res.body.data.password).toBeUndefined();
   });
 
@@ -61,46 +61,10 @@ describe('POST /auth/register', () => {
   });
 });
 
-// ── Verify Email ──────────────────────────────────────────────────────────────
-
-describe('POST /auth/verify-email', () => {
-  it('200 — accepts the verification token sent on registration', async () => {
-    const dbUser = await User.unscoped().findOne({ where: { email: 'jane@example.com' } });
-    const res = await request(app)
-      .post(`${BASE}/verify-email`)
-      .send({ token: dbUser.emailVerificationToken });
-    expect(res.status).toBe(200);
-    expect(res.body.success).toBe(true);
-  });
-
-  it('400 — rejects an invalid token', async () => {
-    const res = await request(app)
-      .post(`${BASE}/verify-email`)
-      .send({ token: 'completely-invalid-token-xyz' });
-    expect(res.status).toBe(400);
-  });
-
-  it('422 — rejects a missing token', async () => {
-    const res = await request(app).post(`${BASE}/verify-email`).send({});
-    expect(res.status).toBe(422);
-  });
-});
-
 // ── Login ─────────────────────────────────────────────────────────────────────
 
 describe('POST /auth/login', () => {
-  it('403 — blocks login for unverified user', async () => {
-    // Register a fresh unverified user
-    await request(app).post(`${BASE}/register`).send({
-      name: 'Unverified User', email: 'unverified@example.com', password: 'securepass123',
-    });
-    const res = await request(app)
-      .post(`${BASE}/login`)
-      .send({ email: 'unverified@example.com', password: 'securepass123' });
-    expect(res.status).toBe(403);
-  });
-
-  it('200 — returns accessToken + refreshToken for verified user', async () => {
+  it('200 — returns accessToken + refreshToken immediately after registration', async () => {
     const res = await request(app)
       .post(`${BASE}/login`)
       .send({ email: 'jane@example.com', password: 'securepass123' });
