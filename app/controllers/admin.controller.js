@@ -51,6 +51,19 @@ class AdminController {
       next(err);
     }
   }
+
+  async listDonations(req, res, next) {
+    try {
+      const pagination = parsePagination(req.query);
+      const { status, charityId, from, to } = req.query;
+      const result = await adminService.listDonations({ status, charityId, from, to }, pagination);
+      const response = paginatedResponse(result.rows, { total: result.count, ...pagination }, 'Donations fetched.');
+      response.totalAmount = result.totalAmount;
+      res.json(response);
+    } catch (err) {
+      next(err);
+    }
+  }
 }
 
 module.exports = new AdminController();

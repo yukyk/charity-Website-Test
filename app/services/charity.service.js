@@ -50,7 +50,7 @@ async function listCharities(filters, { limit, offset }) {
 
 async function getCharity(charityId) {
   const charity = await Charity.findOne({
-    where: { id: charityId, status: 'approved' },
+    where: { id: charityId },
     attributes: { exclude: ['adminNote'] },
     include: [
       {
@@ -84,6 +84,16 @@ async function getCharity(charityId) {
   }
 
   return charity;
+}
+
+async function getMyCharity(userId) {
+  return Charity.findOne({
+    where: { userId },
+    include: [
+      { model: Project,      as: 'projects',      required: false, separate: true, order: [['createdAt', 'DESC']] },
+      { model: ImpactReport, as: 'impactReports', required: false, separate: true, order: [['createdAt', 'DESC']], limit: 5 },
+    ],
+  });
 }
 
 // ── Charity admin mutations ────────────────────────────────────────────────────
@@ -286,6 +296,7 @@ async function listImpactReports(charityId, { limit, offset }) {
 module.exports = {
   listCharities,
   getCharity,
+  getMyCharity,
   createCharity,
   updateCharity,
   addProject,

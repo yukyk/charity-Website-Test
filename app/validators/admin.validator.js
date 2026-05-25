@@ -25,10 +25,20 @@ const deactivateUserRules = [
   param('id').isUUID(4).withMessage('Invalid user ID'),
 ];
 
+const listDonationsRules = [
+  query('page').optional().isInt({ min: 1 }),
+  query('limit').optional().isInt({ min: 1, max: 100 }),
+  query('status').optional().isIn(['pending', 'completed', 'failed', 'refunded']),
+  query('charityId').optional().isUUID(4),
+  query('from').optional().isISO8601(),
+  query('to').optional().isISO8601(),
+];
+
 module.exports = {
   listCharitiesRules,
   approveCharityRules,
   rejectCharityRules,
   listUsersRules,
   deactivateUserRules,
+  listDonationsRules,
 };

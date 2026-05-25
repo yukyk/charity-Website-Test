@@ -32,7 +32,11 @@
       "Bash(node screenshot_dash.mjs)",
       "Bash(awk '/^import |^const .* = require/{print; next} /^[^[:space:]]/&&NR>1{exit}' '/c/Users/Yusuf/Desktop/Charity Website/__TRACKED_VAR__')",
       "Bash(Get-ChildItem \"C:/Users/Yusuf/Desktop/Charity Website/\" -Filter \".env*\")",
-      "Bash(Select-Object Name)"
+      "Bash(Select-Object Name)",
+      "Bash(dir *)",
+      "Bash(rm \"C:\\\\Users\\\\Yusuf\\\\Desktop\\\\Charity Website\\\\views\\\\src\\\\pages\\\\dashboard\\\\${name}.jsx\")",
+      "Bash(rm \"C:/Users/Yusuf/Desktop/Charity Website/views/src/pages/dashboard\\\\${name}.jsx\")",
+      "Bash(node scripts/update-admin-password.js)"
     ]
   }
 }

@@ -7,7 +7,7 @@ const { randomUUID } = require('crypto');
  * Seed data: 1 admin + 3 charity-admin users + 3 approved charities.
  *
  * Credentials for development:
- *   admin@givehope.com   /  Admin@123456
+ *   admin@givehope.com   /  GiveHope@Admin2025
  *   sarah@givehope.com   /  Password@123
  *   michael@givehope.com /  Password@123
  *   priya@givehope.com   /  Password@123
@@ -18,7 +18,7 @@ module.exports = {
 
     // ── Pre-hash passwords (bcrypt salt rounds = 10) ─────────────────────────
     const [adminHash, userHash] = await Promise.all([
-      bcrypt.hash('Admin@123456', 10),
+      bcrypt.hash('GiveHope@Admin2025', 10),
       bcrypt.hash('Password@123', 10),
     ]);
 

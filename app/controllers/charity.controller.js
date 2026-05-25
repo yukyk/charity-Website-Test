@@ -23,6 +23,15 @@ class CharityController {
     }
   }
 
+  async getMyCharity(req, res, next) {
+    try {
+      const charity = await charityService.getMyCharity(req.user.id);
+      res.json(successResponse(charity));
+    } catch (err) {
+      next(err);
+    }
+  }
+
   async createCharity(req, res, next) {
     try {
       const charity = await charityService.createCharity(req.user.id, req.body);

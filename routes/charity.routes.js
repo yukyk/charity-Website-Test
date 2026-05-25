@@ -65,6 +65,9 @@ const {
  */
 router.get('/', listCharitiesRules, validate, charityController.listCharities);
 
+// Must be before /:id to avoid "mine" being treated as a UUID param
+router.get('/mine', verifyToken, charityController.getMyCharity);
+
 /**
  * @swagger
  * /charities/{id}:

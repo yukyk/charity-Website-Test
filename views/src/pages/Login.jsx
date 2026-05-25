@@ -5,6 +5,7 @@ import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
 import { Eye, EyeOff, Heart, ArrowRight } from 'lucide-react';
 import { login as loginAPI } from '../api/auth';
+import { getMyCharity } from '../api/charity';
 import useAuthStore from '../store/authStore';
 import Button from '../components/ui/Button';
 import Input from '../components/ui/Input';
@@ -61,6 +62,19 @@ export default function Login() {
       const { user, accessToken, refreshToken } = res.data;
       storeLogin(user, { accessToken, refreshToken });
       toast.success(`Welcome back, ${user.name.split(' ')[0]}!`);
+
+      if (user.role === 'user') {
+        try {
+          const charityRes = await getMyCharity();
+          if (charityRes?.data?.data) {
+            navigate(from || '/charity-dashboard', { replace: true });
+            return;
+          }
+        } catch {
+          // not a charity owner — fall through to default
+        }
+      }
+
       navigate(from || getDashboardPath(user.role), { replace: true });
     } catch (err) {
       toast.error(err.message);

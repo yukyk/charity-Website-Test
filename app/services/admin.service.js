@@ -1,5 +1,5 @@
 const { Op } = require('sequelize');
-const { User, Charity } = require('../models');
+const { sequelize, User, Charity, Donation, Project } = require('../models');
 const notificationService = require('./notification.service');
 const emailService = require('./email.service');
 
@@ -129,4 +129,37 @@ async function deactivateUser(userId) {
   await user.update({ isActive: false, refreshTokenHash: null });
 }
 
-module.exports = { listCharities, approveCharity, rejectCharity, listUsers, deactivateUser };
+async function listDonations(filters, { limit, offset }) {
+  const where = {};
+  if (filters.status)    where.status    = filters.status;
+  if (filters.charityId) where.charityId = filters.charityId;
+  if (filters.from || filters.to) {
+    where.createdAt = {};
+    if (filters.from) where.createdAt[Op.gte] = new Date(filters.from);
+    if (filters.to)   where.createdAt[Op.lte] = new Date(filters.to + 'T23:59:59');
+  }
+
+  const [{ count, rows }, sumResult] = await Promise.all([
+    Donation.findAndCountAll({
+      where,
+      distinct: true,
+      include: [
+        { model: Charity, as: 'charity', attributes: ['id', 'name'] },
+        { model: User,    as: 'donor',   attributes: ['id', 'name', 'email'] },
+        { model: Project, as: 'project', attributes: ['id', 'title'], required: false },
+      ],
+      order: [['createdAt', 'DESC']],
+      limit,
+      offset,
+    }),
+    Donation.findOne({
+      where,
+      attributes: [[sequelize.fn('SUM', sequelize.col('amount')), 'total']],
+      raw: true,
+    }),
+  ]);
+
+  return { count, rows, totalAmount: parseFloat(sumResult?.total || 0) };
+}
+
+module.exports = { listCharities, approveCharity, rejectCharity, listUsers, deactivateUser, listDonations };

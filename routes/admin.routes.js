@@ -9,6 +9,7 @@ const {
   rejectCharityRules,
   listUsersRules,
   deactivateUserRules,
+  listDonationsRules,
 } = require('../app/validators/admin.validator');
 
 // All admin routes require authentication + admin role
@@ -235,5 +236,7 @@ router.get('/users', listUsersRules, validate, adminController.listUsers);
  *         $ref: '#/components/responses/ValidationError'
  */
 router.delete('/users/:id', deactivateUserRules, validate, adminController.deactivateUser);
+
+router.get('/donations', listDonationsRules, validate, adminController.listDonations);
 
 module.exports = router;
